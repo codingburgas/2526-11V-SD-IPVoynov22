@@ -1,0 +1,28 @@
+﻿@model IEnumerable<JobBoardPlatform.Models.Company>
+
+@{
+    ViewData["Title"] = "Companies";
+}
+
+<h1>Companies</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New Company</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Company Name</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.Description</td>
+        </tr>
+    }
+    </tbody>
+</table>
