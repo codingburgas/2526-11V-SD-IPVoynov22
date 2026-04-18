@@ -32,7 +32,7 @@ namespace JobBoardPlatform.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Description")] Company company)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) 
             {
                 _context.Add(company);
                 await _context.SaveChangesAsync();
