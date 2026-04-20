@@ -1,24 +1,32 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace JobBoardPlatform.Models;
-
-public class JobPosting : BaseEntity
+namespace JobBoardPlatform.Models
 {
-    [Required]
-    public string Title { get; set; }
+    public class JobPosting : BaseEntity
+    {
+        [Required(ErrorMessage = "Title is required")]
+        [RegularExpression(@"^[a-zA-Z\s\-]*$", ErrorMessage = "Title can only contain letters")]
+        [StringLength(100, MinimumLength = 3)]
+        public string Title { get; set; } = string.Empty;
 
-    [Required]
-    public string Description { get; set; }
+        [Required(ErrorMessage = "Description is required")]
+        [RegularExpression(@"^[a-zA-Z\s\.\,\!\?]*$", ErrorMessage = "Description can only contain letters and basic punctuation")]
+        public string Description { get; set; } = string.Empty;
 
-    public string Category { get; set; }
+        [Required(ErrorMessage = "Location is required")]
+        [RegularExpression(@"^[a-zA-Z\s\-]*$", ErrorMessage = "Location can only contain letters")]
+        [StringLength(50, MinimumLength = 2)]
+        public string Location { get; set; } = string.Empty;
 
-    [Range(0, 100000)]
-    public decimal Salary { get; set; }
+        [Required(ErrorMessage = "Salary is required")]
+        [Range(0, 1000000, ErrorMessage = "Please enter a valid salary amount")]
+        [DataType(DataType.Currency)]
+      
+        public decimal Salary { get; set; }
 
-    // Foreign key to link the Job Posting to a specific Company
-    public int CompanyId { get; set; }
-    public virtual Company Company { get; set; }
-
-    // Navigation property: One JobPosting can have Many Applications
-    public virtual ICollection<Application> Applications { get; set; } = new List<Application>();
+        [Required(ErrorMessage = "Please select a company")]
+        public int CompanyId { get; set; }
+        
+        public virtual Company? Company { get; set; }
+    }
 }

@@ -3,16 +3,26 @@ using JobBoardPlatform.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Add services to the container.
+// Add services to the container
 builder.Services.AddControllersWithViews();
 
-// 2. Register ApplicationDbContext 
+// Register DbContext with SQL Server
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
-// 3. Configure the HTTP request pipeline.
+// Database Initialization Block
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    
+    // Warning: Recreates the database on every startup to ensure schema matches models.
+    // context.Database.EnsureDeleted(); 
+    // context.Database.EnsureCreated(); 
+}
+
+// Configure the HTTP request pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -23,7 +33,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 app.UseAuthorization();
 
 app.MapControllerRoute(
