@@ -18,8 +18,8 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     
     // Warning: Recreates the database on every startup to ensure schema matches models.
-    // context.Database.EnsureDeleted(); 
-    // context.Database.EnsureCreated(); 
+     //context.Database.EnsureDeleted(); 
+     //context.Database.EnsureCreated(); 
 }
 
 // Configure the HTTP request pipeline

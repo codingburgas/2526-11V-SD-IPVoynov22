@@ -1,29 +1,72 @@
-﻿@model IEnumerable<JobBoardPlatform.Models.JobPosting>
+@model IEnumerable<JobBoardPlatform.Models.JobPosting>
 
-@{ ViewData["Title"] = "Job Openings"; }
+@{
+    ViewData["Title"] = "Job Openings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 
-<h1>Current Job Openings</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Current Job Openings</h1>
+    <a asp-action="Create" class="btn btn-primary shadow-sm">+ Post a New Job</a>
+</div>
 
-<p><a asp-action="Create" class="btn btn-primary">Post a New Job</a></p>
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-4">Position</th>
+                    <th>Location</th>
+                    <th>Salary</th>
+                    <th>Company</th>
+                    <th>Posted On</th>
+                    <th class="text-center" style="min-width: 280px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model) {
+                <tr class="align-middle">
+                    <td class="ps-4 fw-bold text-primary">
+                        @Html.DisplayFor(modelItem => item.Title)
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark">📍 @Html.DisplayFor(modelItem => item.Location)</span>
+                    </td>
+                    <td class="fw-bold text-success">
+                        @item.Salary.ToString("C")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Company.Name)
+                    </td>
+                    <td class="text-muted small">
+                        @item.CreatedAt.ToString("dd.MM.yyyy")
+                    </td>
+                    <td class="text-center pe-3">
+                        <div class="d-flex justify-content-center align-items-center gap-2">
+                            @* Main action button for applicants *@
+                            <a asp-controller="Applications" asp-action="Create" asp-route-jobPostingId="@item.Id" 
+                               class="btn btn-success btn-sm px-3 shadow-sm">
+                               <b>Apply Now</b>
+                            </a>
 
-<table class="table">
-    <thead>
-    <tr>
-        <th>Title</th>
-        <th>Company</th>
-        <th>Location</th>
-        <th>Salary</th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model) {
-        <tr>
-            <td>@item.Title</td>
-            <td>@item.Company?.Name</td>
-            <td>@item.Location</td>
-            <td>@item.Salary.ToString("C")</td>
-        </tr>
-    }
-    </tbody>
-</table>
+                            @* Administrative action group *@
+                            <div class="btn-group">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning btn-sm">Edit</a>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info btn-sm">Details</a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">Delete</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info mt-4 text-center">
+        No job postings available at the moment. Be the first to post one!
+    </div>
+}
