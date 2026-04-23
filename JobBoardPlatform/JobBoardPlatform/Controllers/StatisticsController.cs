@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using JobBoardPlatform.Data;
 using JobBoardPlatform.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace JobBoardPlatform.Controllers
 {
+    [Authorize]
     public class StatisticsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -18,7 +20,7 @@ namespace JobBoardPlatform.Controllers
         {
             var stats = new StatisticsDto();
 
-            // 1. LINQ Fix: Get grouped data first, then convert to Dictionary in memory
+            //  Get grouped data first, then convert to Dictionary in memory
             var groupedLocations = await _context.JobPostings
                 .GroupBy(j => j.Location)
                 .Select(g => new { 
@@ -31,12 +33,12 @@ namespace JobBoardPlatform.Controllers
 
             stats.TopCategories = groupedLocations.ToDictionary(x => x.Location, x => x.Count);
 
-            // 2. LINQ: Average applications per job
+            //  Average applications per job
             var totalJobs = await _context.JobPostings.CountAsync();
             var totalApps = await _context.Applications.CountAsync();
             stats.AverageApplicationsPerJob = totalJobs > 0 ? (double)totalApps / totalJobs : 0;
 
-            // 3. LINQ: Top Companies by postings count
+            // Top Companies by postings count
             stats.TopCompanies = await _context.Companies
                 .Select(c => new CompanyStatsDto
                 {
@@ -46,8 +48,7 @@ namespace JobBoardPlatform.Controllers
                 .OrderByDescending(c => c.JobCount)
                 .Take(5)
                 .ToListAsync();
-
-            // Still using Json for testing until we create the View
+            
             return View(stats);
         }
     }

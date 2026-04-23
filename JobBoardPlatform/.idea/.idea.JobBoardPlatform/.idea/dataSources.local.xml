@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="dataSourceStorageLocal" created-in="RD-253.29346.144">
-    <data-source name="JobBoardDb@localhost" uuid="5927636b-7f12-4f19-9180-1904ce37b95c">
+    <data-source name="JobBoardNew@localhost" uuid="1f6b32d4-2e96-41ad-8e81-f0fc3528624b">
       <database-info product="Microsoft SQL Server" version="16.00.1000" jdbc-version="4.2" driver-name="JetBrains JDBC Driver for SQL Server" driver-version="1.0" dbms="MSSQL" exact-version="16.0.1000" exact-driver-version="1.0">
         <extra-name-characters>$#@</extra-name-characters>
         <identifier-quote-string>&quot;</identifier-quote-string>

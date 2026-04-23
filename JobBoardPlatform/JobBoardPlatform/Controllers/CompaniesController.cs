@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using JobBoardPlatform.Data;
 using JobBoardPlatform.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace JobBoardPlatform.Controllers
 {
+    [Authorize]
     public class CompaniesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -14,21 +16,41 @@ namespace JobBoardPlatform.Controllers
             _context = context;
         }
 
-        // GET: Companies
         public async Task<IActionResult> Index()
         {
             var companies = await _context.Companies.ToListAsync();
             return View(companies);
         }
 
-        // GET: Companies/Create
+     
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            
+            var company = await _context.Companies
+                .Include(c => c.JobPostings)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (company == null)
+            {
+                return NotFound();
+            }
+
+            return View(company);
+        }
+
+        [Authorize(Roles = "Admin,Employer")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Companies/Create
         [HttpPost]
+        [Authorize(Roles = "Admin,Employer")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Description")] Company company)
         {

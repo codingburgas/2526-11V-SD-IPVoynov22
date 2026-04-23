@@ -1,8 +1,48 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+<div class="py-5">
+    <div class="row align-items-center">
+        <div class="col-lg-6 text-start">
+            <h1 class="display-3 fw-bold mb-3">Find the <span class="text-primary">Perfect</span> Job for You</h1>
+            <p class="lead text-muted mb-4">Join thousands of professionals and start your next career chapter with top companies worldwide.</p>
+            <div class="d-flex gap-3">
+                <a asp-controller="JobPostings" asp-action="Index" class="btn btn-primary btn-lg px-4 shadow">Explore Jobs</a>
+                <a asp-controller="Companies" asp-action="Index" class="btn btn-outline-dark btn-lg px-4">See Companies</a>
+            </div>
+        </div>
+        <div class="col-lg-6 d-none d-lg-block text-center">
+             <i class="bi bi-briefcase text-primary" style="font-size: 15rem; opacity: 0.1;"></i>
+        </div>
+    </div>
+</div>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="row mt-5 pt-5 border-top">
+    <div class="col-md-4 mb-4">
+        <div class="card p-4 h-100 border-0 shadow-sm">
+            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-block p-3 mb-3" style="width: fit-content;">
+                <i class="bi bi-search text-primary h3"></i>
+            </div>
+            <h4>Easy Search</h4>
+            <p class="text-muted">Filter through hundreds of vacancies by location, salary, and position.</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card p-4 h-100 border-0 shadow-sm text-white bg-primary">
+            <div class="bg-white bg-opacity-20 rounded-circle d-inline-block p-3 mb-3" style="width: fit-content;">
+                <i class="bi bi-lightning-charge text-white h3"></i>
+            </div>
+            <h4>Quick Apply</h4>
+            <p class="text-white text-opacity-75">Apply for jobs instantly with your saved profile and motivation letter.</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card p-4 h-100 border-0 shadow-sm">
+            <div class="bg-success bg-opacity-10 rounded-circle d-inline-block p-3 mb-3" style="width: fit-content;">
+                <i class="bi bi-graph-up-arrow text-success h3"></i>
+            </div>
+            <h4>Track Progress</h4>
+            <p class="text-muted">Monitor your application status in real-time through your dashboard.</p>
+        </div>
+    </div>
 </div>

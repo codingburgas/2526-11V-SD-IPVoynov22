@@ -1,15 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using JobBoardPlatform.Data;
 using JobBoardPlatform.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace JobBoardPlatform.Controllers
 {
+    [Authorize]
     public class ApplicationsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -22,151 +21,109 @@ namespace JobBoardPlatform.Controllers
         // GET: Applications
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Applications.Include(a => a.JobPosting);
-            return View(await applicationDbContext.ToListAsync());
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // take login id
+            var userEmail = User.Identity?.Name;
+
+            // take all candidatures with info
+            IQueryable<Application> query = _context.Applications.Include(a => a.JobPosting);
+
+            if (User.IsInRole("Admin"))
+            {
+                return View(await query.ToListAsync());
+            }
+            
+            if (User.IsInRole("Employer"))
+            {
+                // filter for Employyer:
+                query = query.Where(a => a.JobPosting.PublisherId == userId);
+            }
+            else if (User.IsInRole("Candidate"))
+            {
+                // filter for candidate 
+                query = query.Where(a => a.CandidateEmail == userEmail);
+            }
+
+            var results = await query.ToListAsync();
+            return View(results);
         }
 
         // GET: Applications/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var application = await _context.Applications
                 .Include(a => a.JobPosting)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (application == null)
+
+            if (application == null) return NotFound();
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userEmail = User.Identity?.Name;
+
+            bool isAdmin = User.IsInRole("Admin");
+            bool isEmployerOwner = User.IsInRole("Employer") && application.JobPosting?.PublisherId == userId;
+            bool isTheCandidate = User.IsInRole("Candidate") && application.CandidateEmail == userEmail;
+
+            if (!isAdmin && !isEmployerOwner && !isTheCandidate)
             {
-                return NotFound();
+                return Forbid();
             }
 
             return View(application);
         }
 
-        // GET: Applications/Create
-        public IActionResult Create(int? jobPostingId)
+        [Authorize(Roles = "Candidate")]
+        public IActionResult Create(int jobPostingId)
         {
-            
-            if (jobPostingId.HasValue)
-            {
-                ViewData["JobPostingId"] = new SelectList(_context.JobPostings, "Id", "Title", jobPostingId.Value);
-            }
-            else
-            {
-                ViewData["JobPostingId"] = new SelectList(_context.JobPostings, "Id", "Title");
-            }
-            return View();
+            var job = _context.JobPostings.Find(jobPostingId);
+            if (job == null) return NotFound();
+
+            ViewBag.JobTitle = job.Title;
+            var model = new Application { JobPostingId = jobPostingId };
+            return View(model);
         }
 
-        // POST: Applications/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Roles = "Candidate")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CandidateName,CandidateEmail,MotivationLetter,JobPostingId,Id,CreatedAt")] Application application)
+        public async Task<IActionResult> Create([Bind("CandidateName,MotivationLetter,JobPostingId")] Application application)
         {
+            application.CandidateEmail = User.Identity?.Name ?? "unknown@user.com";
+            application.CreatedAt = DateTime.Now;
+
+            ModelState.Remove("CandidateEmail");
+            ModelState.Remove("JobPosting");
+            ModelState.Remove("CreatedAt");
+
             if (ModelState.IsValid)
             {
                 _context.Add(application);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["JobPostingId"] = new SelectList(_context.JobPostings, "Id", "Description", application.JobPostingId);
+
             return View(application);
         }
 
-        // GET: Applications/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var application = await _context.Applications.FindAsync(id);
-            if (application == null)
-            {
-                return NotFound();
-            }
-            ViewData["JobPostingId"] = new SelectList(_context.JobPostings, "Id", "Description", application.JobPostingId);
-            return View(application);
-        }
-
-        // POST: Applications/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CandidateName,CandidateEmail,MotivationLetter,JobPostingId,Id,CreatedAt")] Application application)
-        {
-            if (id != application.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(application);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ApplicationExists(application.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["JobPostingId"] = new SelectList(_context.JobPostings, "Id", "Description", application.JobPostingId);
-            return View(application);
-        }
-
-        // GET: Applications/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var application = await _context.Applications
-                .Include(a => a.JobPosting)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (application == null)
-            {
-                return NotFound();
-            }
-
+            if (id == null) return NotFound();
+            var application = await _context.Applications.Include(a => a.JobPosting).FirstOrDefaultAsync(m => m.Id == id);
+            if (application == null) return NotFound();
             return View(application);
         }
 
-        // POST: Applications/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var application = await _context.Applications.FindAsync(id);
-            if (application != null)
-            {
-                _context.Applications.Remove(application);
-            }
-
+            if (application != null) _context.Applications.Remove(application);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ApplicationExists(int id)
-        {
-            return _context.Applications.Any(e => e.Id == id);
         }
     }
 }

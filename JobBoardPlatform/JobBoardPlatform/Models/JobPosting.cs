@@ -21,8 +21,10 @@ namespace JobBoardPlatform.Models
         [Required(ErrorMessage = "Salary is required")]
         [Range(0, 1000000, ErrorMessage = "Please enter a valid salary amount")]
         [DataType(DataType.Currency)]
-      
         public decimal Salary { get; set; }
+
+        
+        public string? PublisherId { get; set; }
 
         [Required(ErrorMessage = "Please select a company")]
         public int CompanyId { get; set; }

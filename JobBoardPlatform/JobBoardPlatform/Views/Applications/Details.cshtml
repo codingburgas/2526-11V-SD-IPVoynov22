@@ -1,49 +1,65 @@
 @model JobBoardPlatform.Models.Application
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Application Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                
+                <div class="card-header bg-primary text-white py-3">
+                    <h3 class="mb-0"><i class="bi bi-info-circle me-2"></i> Application Details</h3>
+                </div>
 
-<div>
-    <h4>Application</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CandidateName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CandidateName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CandidateEmail)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CandidateEmail)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MotivationLetter)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MotivationLetter)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.JobPosting)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.JobPosting.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+                <div class="card-body p-4">
+                    
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold text-muted">@Html.DisplayNameFor(model => model.CandidateName)</div>
+                        <div class="col-sm-8 text-dark fw-bold">@Html.DisplayFor(model => model.CandidateName)</div>
+                    </div>
+
+                   
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold text-muted">@Html.DisplayNameFor(model => model.CandidateEmail)</div>
+                        <div class="col-sm-8">@Html.DisplayFor(model => model.CandidateEmail)</div>
+                    </div>
+
+                   
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold text-muted">Applied Position</div>
+                        <div class="col-sm-8">
+                            <span class="badge bg-info text-dark">@Model.JobPosting?.Title</span>
+                        </div>
+                    </div>
+
+                   
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold text-muted">@Html.DisplayNameFor(model => model.CreatedAt)</div>
+                        <div class="col-sm-8">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</div>
+                    </div>
+
+                    <hr />
+
+                   
+                    <div class="mb-3">
+                        <label class="fw-bold text-muted mb-2">@Html.DisplayNameFor(model => model.MotivationLetter)</label>
+                        <div class="p-3 bg-light rounded border shadow-sm" style="white-space: pre-wrap;">
+                            @Html.DisplayFor(model => model.MotivationLetter)
+                        </div>
+                    </div>
+                </div>
+
+               
+                <div class="card-footer bg-white border-0 p-4">
+                   
+                    <a asp-action="Index" class="btn btn-outline-primary btn-lg rounded-pill px-4 shadow-sm">
+                        <i class="bi bi-arrow-left me-2"></i> Back to My Applications
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
