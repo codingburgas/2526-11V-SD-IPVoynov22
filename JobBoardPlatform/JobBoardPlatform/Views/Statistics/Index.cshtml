@@ -1,0 +1,74 @@
+﻿@model JobBoardPlatform.Models.DTOs.StatisticsDto
+
+@{
+    ViewData["Title"] = "Platform Statistics";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4 text-center">📊 Platform Insights</h1>
+
+    <div class="row g-4">
+        @* Key Metric: Average Applications *@
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm bg-primary text-white h-100">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <h5 class="card-title opacity-75">Avg. Applications per Job</h5>
+                    <h2 class="display-4 fw-bold">@Model.AverageApplicationsPerJob.ToString("0.0")</h2>
+                    <p class="mb-0">Candidate interest level</p>
+                </div>
+            </div>
+        </div>
+
+        @* Top Categories (Locations) *@
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white fw-bold">📍 Top Job Locations</div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var category in Model.TopCategories)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            @category.Key
+                            <span class="badge bg-info rounded-pill">@category.Value Jobs</span>
+                        </li>
+                    }
+                    @if (!Model.TopCategories.Any())
+                    {
+                        <li class="list-group-item text-muted">No location data available.</li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        @* Top Companies *@
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white fw-bold">🏢 Leading Employers</div>
+                <div class="card-body p-0">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-3">Company</th>
+                                <th class="text-end pe-3">Postings</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var company in Model.TopCompanies)
+                            {
+                                <tr>
+                                    <td class="ps-3">@company.CompanyName</td>
+                                    <td class="text-end pe-3 fw-bold">@company.JobCount</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <a asp-controller="JobPostings" asp-action="Index" class="btn btn-outline-secondary">
+            Return to Job Board
+        </a>
+    </div>
+</div>
