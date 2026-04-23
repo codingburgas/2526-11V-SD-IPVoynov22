@@ -1,164 +1,107 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using JobBoardPlatform.Data;
 using JobBoardPlatform.Models;
+using JobBoardPlatform.Services.Interfaces;
+using JobBoardPlatform.Data;
 
 namespace JobBoardPlatform.Controllers
 {
     public class JobPostingsController : Controller
     {
+        private readonly IJobService _jobService;
         private readonly ApplicationDbContext _context;
 
-        public JobPostingsController(ApplicationDbContext context)
+        public JobPostingsController(IJobService jobService, ApplicationDbContext context)
         {
+            _jobService = jobService;
             _context = context;
         }
 
         // GET: JobPostings
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.JobPostings.Include(j => j.Company);
-            return View(await applicationDbContext.ToListAsync());
+            var jobs = await _jobService.GetAllJobsAsync();
+            return View(jobs);
         }
 
         // GET: JobPostings/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var jobPosting = await _context.JobPostings
-                .Include(j => j.Company)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (jobPosting == null)
-            {
-                return NotFound();
-            }
+            var jobPosting = await _jobService.GetJobByIdAsync(id.Value);
+            if (jobPosting == null) return NotFound();
 
+            // Fixed: changed JobPosting to jobPosting
             return View(jobPosting);
         }
 
         // GET: JobPostings/Create
         public IActionResult Create()
         {
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Description");
+            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name");
             return View();
         }
 
-        // POST: JobPostings/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Description,Location,Salary,CompanyId,Id,CreatedAt")] JobPosting jobPosting)
+        public async Task<IActionResult> Create(JobPosting jobPosting)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(jobPosting);
-                await _context.SaveChangesAsync();
+                await _jobService.CreateJobAsync(jobPosting);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Description", jobPosting.CompanyId);
+            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", jobPosting.CompanyId);
             return View(jobPosting);
         }
 
         // GET: JobPostings/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var jobPosting = await _context.JobPostings.FindAsync(id);
-            if (jobPosting == null)
-            {
-                return NotFound();
-            }
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Description", jobPosting.CompanyId);
+            var jobPosting = await _jobService.GetJobByIdAsync(id.Value);
+            if (jobPosting == null) return NotFound();
+
+            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", jobPosting.CompanyId);
+            
+            // Fixed: changed JobPosting to jobPosting
             return View(jobPosting);
         }
 
-        // POST: JobPostings/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Title,Description,Location,Salary,CompanyId,Id,CreatedAt")] JobPosting jobPosting)
+        public async Task<IActionResult> Edit(int id, JobPosting jobPosting)
         {
-            if (id != jobPosting.Id)
-            {
-                return NotFound();
-            }
+            if (id != jobPosting.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(jobPosting);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!JobPostingExists(jobPosting.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                await _jobService.UpdateJobAsync(jobPosting);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Description", jobPosting.CompanyId);
+            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", jobPosting.CompanyId);
             return View(jobPosting);
         }
 
         // GET: JobPostings/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var jobPosting = await _context.JobPostings
-                .Include(j => j.Company)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (jobPosting == null)
-            {
-                return NotFound();
-            }
+            var jobPosting = await _jobService.GetJobByIdAsync(id.Value);
+            if (jobPosting == null) return NotFound();
 
             return View(jobPosting);
         }
 
-        // POST: JobPostings/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var jobPosting = await _context.JobPostings.FindAsync(id);
-            if (jobPosting != null)
-            {
-                _context.JobPostings.Remove(jobPosting);
-            }
-
-            await _context.SaveChangesAsync();
+            await _jobService.DeleteJobAsync(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool JobPostingExists(int id)
-        {
-            return _context.JobPostings.Any(e => e.Id == id);
         }
     }
 }

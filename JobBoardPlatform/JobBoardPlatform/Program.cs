@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using JobBoardPlatform.Data;
-
+using JobBoardPlatform.Services;
+using JobBoardPlatform.Services.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
@@ -9,7 +10,7 @@ builder.Services.AddControllersWithViews();
 // Register DbContext with SQL Server
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+builder.Services.AddScoped<IJobService, JobService>();
 var app = builder.Build();
 
 // Database Initialization Block

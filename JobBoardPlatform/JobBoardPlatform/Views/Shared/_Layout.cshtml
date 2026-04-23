@@ -13,7 +13,7 @@
 <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
         <div class="container-fluid">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">JobBoardPlatform</a>
+            <a class="navbar-brand fw-bold text-primary" asp-area="" asp-controller="Home" asp-action="Index">JobBoardPlatform</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -23,10 +23,18 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
+                    @* New Links added here *@
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Companies" asp-action="Index">Companies</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="JobPostings" asp-action="Index">Job Openings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Applications" asp-action="Index">Applications</a>
                     </li>
                 </ul>
+                @* Placeholder for Login/Identity - we will add this during the security step *@
             </div>
         </div>
     </nav>
@@ -38,8 +46,8 @@
 </div>
 
 <footer class="border-top footer text-muted">
-    <div class="container">
-        &copy; 2026 - JobBoardPlatform - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <div class="container text-center">
+        &copy; 2026 - JobBoardPlatform - Built with ASP.NET Core
     </div>
 </footer>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
