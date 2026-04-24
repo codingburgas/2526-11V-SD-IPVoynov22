@@ -31,3 +31,30 @@ A modern Web Application for managing job postings, built with **ASP.NET Core MV
 1. **Clone the repository**:
    ```bash
    git clone <https://github.com/codingburgas/2526-11V-SD-IPVoynov22.git>
+   ```
+2. **Go to project directory**
+```bash
+cd 2526-11V-SD-IPVoynov22
+```
+
+3. **Install EF Core CLI (if not installed)**
+   ```bash
+   dotnet tool install --global dotnet-ef
+   ```
+4. **Restore dependencies**
+```bash
+dotnet restor
+```
+5. **Build the project**
+```bash
+dotnet build
+```
+6. **Apply the database migrations**
+```bash
+dotnet ef database update
+```
+7. **Run the application**
+```bash
+dotnet run
+```
+   
