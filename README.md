@@ -43,7 +43,7 @@ cd 2526-11V-SD-IPVoynov22
    ```
 4. **Restore dependencies**
 ```bash
-dotnet restor
+dotnet restore
 ```
 5. **Build the project**
 ```bash
