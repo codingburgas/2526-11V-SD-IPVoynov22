@@ -12,7 +12,7 @@ builder.Services.AddRazorPages();
 
 // Register Database Context for SQL Server
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Identity Configuration (Authentication & Authorization)
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
@@ -20,9 +20,9 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
         options.SignIn.RequireConfirmedAccount = false;
         options.Password.RequireDigit = false;
         options.Password.RequiredLength = 6; 
-        options.Password.RequireNonAlphanumeric = false;
-        options.Password.RequireUppercase = false;
-        options.Password.RequireLowercase = false;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireLowercase = true;
     })
     .AddRoles<IdentityRole>() // Required for Role-based access (Admin/Employer)
     .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -57,7 +57,7 @@ using (var scope = app.Services.CreateScope())
 
         // Seed Default Admin Account 
         string adminEmail = "ivko@abv.bg";
-        string adminPassword = "123456"; 
+        string adminPassword = "Password1234!!??"; 
 
         var adminUser = userManager.FindByEmailAsync(adminEmail).GetAwaiter().GetResult();
         
